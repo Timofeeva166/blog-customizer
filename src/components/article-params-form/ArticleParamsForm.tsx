@@ -53,35 +53,35 @@ export const ArticleParamsForm = forwardRef<
 
 	//смена значений полей в форме
 	const fieldsHandlers = {
-		fontFamily: (selected: OptionType) => {
+		changeFontFamily: (selected: OptionType) => {
 			setFormState((prev) => ({
 				...prev,
 				fontFamilyOption: selected,
 			}));
 		},
 
-		fontSize: (selected: OptionType) => {
+		changeFontSize: (selected: OptionType) => {
 			setFormState((prev) => ({
 				...prev,
 				fontSizeOption: selected,
 			}));
 		},
 
-		fontColor: (selected: OptionType) => {
+		changeFontColor: (selected: OptionType) => {
 			setFormState((prev) => ({
 				...prev,
 				fontColor: selected,
 			}));
 		},
 
-		backgroundColor: (selected: OptionType) => {
+		changeBackgroundColor: (selected: OptionType) => {
 			setFormState((prev) => ({
 				...prev,
 				backgroundColor: selected,
 			}));
 		},
 
-		contentWidth: (selected: OptionType) => {
+		changeContentWidth: (selected: OptionType) => {
 			setFormState((prev) => ({
 				...prev,
 				contentWidth: selected,
@@ -113,33 +113,33 @@ export const ArticleParamsForm = forwardRef<
 						<Select
 							selected={formState.fontFamilyOption}
 							options={fontFamilyOptions}
-							onChange={fieldsHandlers.fontFamily}
+							onChange={fieldsHandlers.changeFontFamily}
 							title='Шрифт'
 						/>
 						<RadioGroup
 							name='fontSize'
 							options={fontSizeOptions}
 							selected={formState.fontSizeOption}
-							onChange={fieldsHandlers.fontSize}
+							onChange={fieldsHandlers.changeFontSize}
 							title='Размер шрифта'
 						/>
 						<Select
 							selected={formState.fontColor}
 							options={fontColors}
-							onChange={fieldsHandlers.fontColor}
+							onChange={fieldsHandlers.changeFontColor}
 							title='Цвет шрифта'
 						/>
 						<Separator />
 						<Select
 							selected={formState.backgroundColor}
 							options={backgroundColors}
-							onChange={fieldsHandlers.backgroundColor}
+							onChange={fieldsHandlers.changeBackgroundColor}
 							title='Цвет фона'
 						/>
 						<Select
 							selected={formState.contentWidth}
 							options={contentWidthArr}
-							onChange={fieldsHandlers.contentWidth}
+							onChange={fieldsHandlers.changeContentWidth}
 							title='Ширина контента'
 						/>
 					</div>
