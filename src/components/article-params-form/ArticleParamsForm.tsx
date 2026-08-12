@@ -16,7 +16,7 @@ import {
 	ArticleStateType,
 	defaultArticleState,
 } from 'src/constants/articleProps';
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, forwardRef, useState } from 'react';
 import { RadioGroup } from 'src/ui/radio-group';
 
 type ArticleParamsFormProps = {
@@ -24,36 +24,34 @@ type ArticleParamsFormProps = {
 	onApply: (selectedState: ArticleStateType) => void;
 	onReset: () => void;
 	onToggleForm: () => void;
-	currentState: ArticleStateType;
+	arrowButtonRef?: React.RefObject<HTMLDivElement>;
 };
 
-export const ArticleParamsForm = ({
-	isOpen,
-	onApply,
-	onReset,
-	onToggleForm,
-	currentState,
-}: ArticleParamsFormProps) => {
-	const [formState, setFormState] = useState<ArticleStateType>(currentState);
+export const ArticleParamsForm = forwardRef<
+	HTMLElement,
+	ArticleParamsFormProps
+>(({ isOpen, onApply, onReset, onToggleForm, arrowButtonRef }, ref) => {
+	//статус формы
+	const [formState, setFormState] =
+		useState<ArticleStateType>(defaultArticleState);
 
-	useEffect(() => {
-		setFormState(currentState);
-	}, [currentState]);
-
+	//не перезагружаем форму при применении настроек
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		handleApply();
 	};
 
+	//применяем настройки к статье
 	const handleApply = () => {
 		onApply(formState);
 	};
 
+	//скидываем настройки и в сайдбаре, и в статье
 	const handleReset = () => {
 		setFormState(defaultArticleState);
 		onReset();
 	};
 
+	//смена значений полей в форме
 	const fieldsHandlers = {
 		fontFamily: (selected: OptionType) => {
 			setFormState((prev) => ({
@@ -93,8 +91,11 @@ export const ArticleParamsForm = ({
 
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={onToggleForm} />
+			<div ref={arrowButtonRef}>
+				<ArrowButton isOpen={isOpen} onClick={onToggleForm} />
+			</div>
 			<aside
+				ref={ref}
 				className={`${styles.container} ${
 					isOpen ? styles.container_open : ''
 				}`}>
@@ -104,16 +105,16 @@ export const ArticleParamsForm = ({
 							size={31}
 							weight={800}
 							uppercase={true}
-							fontStyle={'normal'}
-							align={'left'}
-							family={'open-sans'}>
+							fontStyle='normal'
+							align='left'
+							family='open-sans'>
 							Задайте параметры
 						</Text>
 						<Select
 							selected={formState.fontFamilyOption}
 							options={fontFamilyOptions}
 							onChange={fieldsHandlers.fontFamily}
-							title='шрифт'
+							title='Шрифт'
 						/>
 						<RadioGroup
 							name='fontSize'
@@ -160,4 +161,6 @@ export const ArticleParamsForm = ({
 			</aside>
 		</>
 	);
-};
+});
+
+ArticleParamsForm.displayName = 'ArticleParamsForm';
