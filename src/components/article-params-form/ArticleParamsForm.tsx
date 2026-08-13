@@ -36,8 +36,6 @@ export const ArticleParamsForm = ({
 	const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
 	//элемент панельки
 	const panelRef = useRef<HTMLElement>(null);
-	//див-обертка для кнопки закрытия
-	const arrowButtonRef = useRef<HTMLDivElement>(null);
 
 	//не перезагружаем форму при применении настроек
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -95,8 +93,7 @@ export const ArticleParamsForm = ({
 			if (isPanelOpen === false) return;
 			else if (
 				panelRef.current &&
-				!panelRef.current.contains(e.target as Node) &&
-				!arrowButtonRef.current?.contains(e.target as Node)
+				!panelRef.current.contains(e.target as Node)
 			) {
 				setIsPanelOpen(false);
 			}
@@ -111,12 +108,10 @@ export const ArticleParamsForm = ({
 
 	return (
 		<>
-			<div ref={arrowButtonRef}>
-				<ArrowButton
-					isOpen={isPanelOpen}
-					onClick={() => setIsPanelOpen(!isPanelOpen)}
-				/>
-			</div>
+			<ArrowButton
+				isOpen={isPanelOpen}
+				onClick={() => setIsPanelOpen(!isPanelOpen)}
+			/>
 			<aside
 				ref={panelRef}
 				className={clsx(
