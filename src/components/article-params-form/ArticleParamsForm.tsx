@@ -16,32 +16,32 @@ import {
 	ArticleStateType,
 	defaultArticleState,
 } from 'src/constants/articleProps';
-import { FormEvent, forwardRef, useState } from 'react';
+import { FormEvent, useState, useRef, useEffect } from 'react';
 import { RadioGroup } from 'src/ui/radio-group';
+import clsx from 'clsx';
 
 type ArticleParamsFormProps = {
-	isOpen: boolean;
 	onApply: (selectedState: ArticleStateType) => void;
 	onReset: () => void;
-	onToggleForm: () => void;
-	arrowButtonRef?: React.RefObject<HTMLDivElement>;
 };
 
-export const ArticleParamsForm = forwardRef<
-	HTMLElement,
-	ArticleParamsFormProps
->(({ isOpen, onApply, onReset, onToggleForm, arrowButtonRef }, ref) => {
+export const ArticleParamsForm = ({
+	onApply,
+	onReset,
+}: ArticleParamsFormProps) => {
 	//статус формы
 	const [formState, setFormState] =
 		useState<ArticleStateType>(defaultArticleState);
+	//открыта ли панелька
+	const [isPanelOpen, setIsPanelOpen] = useState<boolean>(false);
+	//элемент панельки
+	const panelRef = useRef<HTMLElement>(null);
+	//див-обертка для кнопки закрытия
+	const arrowButtonRef = useRef<HTMLDivElement>(null);
 
 	//не перезагружаем форму при применении настроек
 	const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-	};
-
-	//применяем настройки к статье
-	const handleApply = () => {
 		onApply(formState);
 	};
 
@@ -89,16 +89,40 @@ export const ArticleParamsForm = forwardRef<
 		},
 	};
 
+	//по клику вне формы закрываем панельку
+	useEffect(() => {
+		const handleOutsideClick = (e: MouseEvent) => {
+			if (isPanelOpen === false) return;
+			else if (
+				panelRef.current &&
+				!panelRef.current.contains(e.target as Node) &&
+				!arrowButtonRef.current?.contains(e.target as Node)
+			) {
+				setIsPanelOpen(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleOutsideClick);
+
+		return () => {
+			document.removeEventListener('mousedown', handleOutsideClick);
+		};
+	}, [isPanelOpen]);
+
 	return (
 		<>
 			<div ref={arrowButtonRef}>
-				<ArrowButton isOpen={isOpen} onClick={onToggleForm} />
+				<ArrowButton
+					isOpen={isPanelOpen}
+					onClick={() => setIsPanelOpen(!isPanelOpen)}
+				/>
 			</div>
 			<aside
-				ref={ref}
-				className={`${styles.container} ${
-					isOpen ? styles.container_open : ''
-				}`}>
+				ref={panelRef}
+				className={clsx(
+					styles.container,
+					isPanelOpen && styles.container_open
+				)}>
 				<form className={styles.form} onSubmit={handleSubmit}>
 					<div className={styles.body}>
 						<Text
@@ -154,13 +178,11 @@ export const ArticleParamsForm = forwardRef<
 							title='Применить'
 							htmlType='submit'
 							type='apply'
-							onClick={handleApply}
+							onClick={() => onApply(formState)}
 						/>
 					</div>
 				</form>
 			</aside>
 		</>
 	);
-});
-
-ArticleParamsForm.displayName = 'ArticleParamsForm';
+};
